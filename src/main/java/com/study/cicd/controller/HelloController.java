@@ -12,7 +12,7 @@ public class HelloController {
     
     @GetMapping("/test")
     public String test() {
-        return "Test";
+        return "Github WebHooks Test";
     }
 
 }
