@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         GIT_URL = "https://github.com/Development-study/-CI-CD-Study.git"
+        DOCKERHUB_CREDENTIALS = credentials('docker-hub')
     }
 
     stages {
@@ -15,25 +16,25 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'SpringBoot Gradle Project Build'
-                sh './gradlew clean build'
+                bat 'gradlew.bat clean build'
             }
         }
 
         stage('Dockerize') {
             steps {
                 echo 'Docker Image Build And Image Push'
-                sh 'docker build -t yongbin1/cicd-server:0.0.1 .'
-                sh 'docker login -u yongbin1 -p jyj10241103*'
-                sh 'docker push yongbin1/cicd-server:0.0.1'
+                bat 'docker build -t yongbin1/cicd-server:0.0.1 .'
+                bat 'docker login -u yongbin1 -p jyj10241103*'
+                bat 'docker push yongbin1/cicd-server:0.0.1'
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Docker Container Run'
-                sh 'docker ps -q --filter "name=cicd-service" | xargs -r docker stop'
-                sh 'docker ps -aq --filter "name=cicd-service" | xargs -r docker rm'
-                sh 'docker run -d --name cicd-service -p 8080:8080 yongbin1/cicd-server:0.0.1'
+                bat 'docker ps -q --filter "name=cicd-service" | xargs -r docker stop'
+                bat 'docker ps -aq --filter "name=cicd-service" | xargs -r docker rm'
+                bat 'docker run -d --name cicd-service -p 8080:8080 yongbin1/cicd-server:0.0.1'
             }
         }
     }
