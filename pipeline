@@ -15,6 +15,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'SpringBoot Gradle Project Build'
+                sh 'chmod +x ./gradlew'
                 sh './gradlew clean build'
             }
         }
