@@ -3,37 +3,44 @@ pipeline {
 
     environment {
         GIT_URL = "https://github.com/Development-study/-CI-CD-Study.git"
+        SERVICE_NAME = ""
+        IMG_NAME = ""
+        IMG_VERSION = ""
+        CONTAINER_NAME = ""
+        DOCKER_ID = ""
+        DOCKER_PW = ""
     }
 
     stages {
         stage('Pull') {
             steps {
-                git url: "${GIT_URL}", branch: "main", poll: true, changelog: true
+                git url: "${GIT_URL}", branch: "master/${SERVICE_NAME}", poll: true, changelog: true
             }
         }
 
         stage('Build') {
             steps {
                 echo 'SpringBoot Gradle Project Build'
-                sh './gradlew clean build'
+                sh "chmod +x ./${SERVICE_NAME}/gradlew"
+                sh "./${SERVICE_NAME}/gradlew clean build"
             }
         }
 
         stage('Dockerize') {
             steps {
                 echo 'Docker Image Build And Image Push'
-                sh 'docker build -t yongbin1/cicd-server:0.0.1 .'
-                sh 'docker login -u yongbin1 -p jyj10241103*'
-                sh 'docker push yongbin1/cicd-server:0.0.1'
+                sh "docker build -t ${DOCKER_ID}/${IMG_NAME}:${IMG_VERSION} ."
+                sh "docker login -u ${DOCKER_ID} -p ${DOCKER_PW}"
+                sh "docker push ${DOCKER_ID}/${IMG_NAME}:${IMG_VERSION}"
             }
         }
 
         stage('Deploy') {
             steps {
                 echo 'Docker Container Run'
-                sh 'docker ps -q --filter "name=cicd-service" | xargs -r docker stop'
-                sh 'docker ps -aq --filter "name=cicd-service" | xargs -r docker rm'
-                sh 'docker run -d --name cicd-service -p 8080:8080 yongbin1/cicd-server:0.0.1'
+                sh "docker ps -q --filter 'name=${CONTAINER_NAME}' | xargs -r docker stop"
+                sh "docker ps -aq --filter 'name=${CONTAINER_NAME}' | xargs -r docker rm"
+                sh "docker run -d --name ${CONTAINER_NAME} -p 8080:8080 ${DOCKER_ID}/${IMG_NAME}:${IMG_VERSION}"
             }
         }
     }
