@@ -17,7 +17,7 @@ public class HelloController {
 
     @GetMapping("/main-1-test")
     public String test1() {
-        return "Github WebHooks Branch Test";
+        return "Github WebHooks Main_1 Branch Test";
     }
 
 }
